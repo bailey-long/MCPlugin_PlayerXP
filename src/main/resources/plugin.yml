@@ -5,3 +5,8 @@ api-version: 1.19
 authors: [ Bailey, Dom ]
 description: A custom player XP system that adds Runescape esque leveling systems
 website: play.mcsksyscape.com
+
+commands:
+  levels:
+    description: Show player current XP level
+    usage: /levels
