@@ -10,3 +10,6 @@ commands:
   levels:
     description: Show player current XP level
     usage: /levels
+  addwoodcutting:
+    description: increment woodcutting level
+    usage: /addwoodcutting
