@@ -23,6 +23,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PlayerXPSystem extends JavaPlugin implements CommandExecutor, Listener {
     public HashMap<Player, Integer> woodcutting = new HashMap<>();
     public HashMap<Player, Integer> woodcuttingXP = new HashMap<>();
+    public int woodcuttingToGo;
+    public int woodcutting2 = 41;
+    public int woodcutting3 = 87;
+    public int woodcutting4 = 138;
     public HashMap<Player, Integer> mining = new HashMap<>();
     public HashMap<Player, Integer> combat = new HashMap<>();
 
@@ -35,12 +39,12 @@ public class PlayerXPSystem extends JavaPlugin implements CommandExecutor, Liste
     public void onDisable(){
         //Save hashmap to config file
     }
-    @EventHandler //Assign hashmaps to player (CHANGE TO ON PLAYER FIRST JOIN ONCE CONFIG HAS BEEN SETUP)
+    @EventHandler //Assign hashmaps to player (CHANGE TO ON PLAYER FIRST JOIN ONCE CONFIG HAS BEEN SET UP)
     public void onJoin(PlayerJoinEvent e) {
-        woodcutting.put(e.getPlayer(), 0);
+        woodcutting.put(e.getPlayer(), 1);
         woodcuttingXP.put(e.getPlayer(), 0);
-        mining.put(e.getPlayer(), 0);
-        combat.put(e.getPlayer(), 0);
+        mining.put(e.getPlayer(), 1);
+        combat.put(e.getPlayer(), 1);
     }
 
     @EventHandler
@@ -53,9 +57,9 @@ public class PlayerXPSystem extends JavaPlugin implements CommandExecutor, Liste
             int woodCuttingXP = woodcuttingXP.get(e.getPlayer());
             woodcuttingXP.put(e.getPlayer(), woodCuttingXP + 1);
             // level 2 threshold
-            if (woodCuttingXP >= 83 && woodCuttingXP < 174){
+            if (woodCuttingXP >= woodcutting2 && woodcutting3 < 174){
                 woodcutting.put(e.getPlayer(), 2);
-            } else if (woodCuttingXP >= 174 && woodCuttingXP < 276) {
+            } else if (woodCuttingXP >= woodcutting3 && woodCuttingXP < woodcutting4) {
                 woodcutting.put(e.getPlayer(), 3);
             }
         }
@@ -70,7 +74,14 @@ public class PlayerXPSystem extends JavaPlugin implements CommandExecutor, Liste
                 Player player = (Player) sender;
                 if (sender instanceof Player) {
                     int woodCuttingLevel = woodcutting.get(player.getPlayer());
-                    player.sendMessage("Your woodcutting is " + woodCuttingLevel);
+                    int woodCuttingXP = woodcuttingXP.get(player.getPlayer());
+                    if (woodCuttingXP >= woodcutting2 && woodCuttingXP < woodcutting3){
+                        woodcuttingToGo = woodcutting2;
+                    } else if (woodCuttingXP >= woodcutting3 && woodCuttingXP < woodcutting4) {
+                        woodcuttingToGo = woodcutting3;
+                    }
+                    player.sendMessage("Your woodcutting is " + woodCuttingLevel + ", you are at " + woodCuttingXP + " out of "
+                    + woodcuttingToGo);
                     player.sendMessage("Your Mining is 0");
                     player.sendMessage("Your Combat is 0");
                 }
