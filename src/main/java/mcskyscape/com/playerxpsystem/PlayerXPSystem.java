@@ -22,21 +22,23 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class PlayerXPSystem extends JavaPlugin implements CommandExecutor, Listener {
     public HashMap<Player, Integer> woodcutting = new HashMap<>();
+    public HashMap<Player, Integer> woodcuttingXP = new HashMap<>();
     public HashMap<Player, Integer> mining = new HashMap<>();
     public HashMap<Player, Integer> combat = new HashMap<>();
+
     @Override
     public void onEnable(){
         getServer().getPluginManager().registerEvents( this, this);
         this.getCommand("levels").setExecutor(new Commandseelevels());
-        this.getCommand("addwoodcutting").setExecutor(new Addwoodcutting());
     }
     @Override
     public void onDisable(){
-        
+        //Save hashmap to config file
     }
-    @EventHandler
+    @EventHandler //Assign hashmaps to player (CHANGE TO ON PLAYER FIRST JOIN ONCE CONFIG HAS BEEN SETUP)
     public void onJoin(PlayerJoinEvent e) {
         woodcutting.put(e.getPlayer(), 0);
+        woodcuttingXP.put(e.getPlayer(), 0);
         mining.put(e.getPlayer(), 0);
         combat.put(e.getPlayer(), 0);
     }
@@ -45,14 +47,20 @@ public class PlayerXPSystem extends JavaPlugin implements CommandExecutor, Liste
     public void onBlockBreak(BlockBreakEvent e) {
         Player p = (Player) e.getPlayer();
         Block b = (Block) e.getBlock();
-
+        //Add woodcutting if player breaks logs
         if (b.getType() == Material.OAK_LOG) {
-            b.setType(Material.AIR);
-            p.getInventory().addItem(new ItemStack(Material.OAK_LOG));
-            p.sendMessage("+1 woodcutting");
-            int woodCuttingLevel = woodcutting.get(e.getPlayer());
-            woodcutting.put(e.getPlayer(), woodCuttingLevel + 1);
+            p.sendMessage("+1 woodcutting xp");
+            int woodCuttingXP = woodcuttingXP.get(e.getPlayer());
+            woodcuttingXP.put(e.getPlayer(), woodCuttingXP + 1);
+            // level 2 threshold
+            if (woodCuttingXP >= 83 && woodCuttingXP < 174){
+                woodcutting.put(e.getPlayer(), 2);
+            } else if (woodCuttingXP >= 174 && woodCuttingXP < 276) {
+                woodcutting.put(e.getPlayer(), 3);
+            }
         }
+        //Add mining if player mines cobble
+        //Add farming if player breaks wheat,potatoes,sugar cane or any other plant type
     }
     //Command to see levels
     public class Commandseelevels implements CommandExecutor {
@@ -71,22 +79,4 @@ public class PlayerXPSystem extends JavaPlugin implements CommandExecutor, Liste
             return false;
         }
     }
-    //test command to increment woodcutting
-    public class Addwoodcutting implements CommandExecutor {
-        @Override
-        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if (label.equals("addwoodcutting")){
-                Player player = (Player) sender;
-                if (sender instanceof Player) {
-                    int woodCuttingLevel = woodcutting.get(player.getPlayer());
-                    woodcutting.put(player.getPlayer(), woodCuttingLevel + 1);
-                }
-                return true;
-            }
-            return false;
-        }
-
-    }
-
-
 }
